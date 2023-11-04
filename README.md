@@ -1,74 +1,254 @@
-# OS-EX.9-IMPLEMENTATION-OF-PAGING---MEMORY-MANAGEMENT-
+
+# OS-EX.11-IMPLEMENTATION-OF-DISK-SCHEDULING-ALGORITHMS
 
 # AIM
 
-To write a C program to implement Page Replacement technique using FIFO.
+To write a program for the first come first serve method of disc scheduling.
 
-# ALGORITHM
+# PROGRAM
+```
+#include <stdio.h>
+#include <stdlib.h>
+int main()
+{
+int RQ[100],i,n,TotalHeadMoment=0,initial;
+printf ("Enter the number of Requests\n");
+scanf("%d",&n);
+printf("Enter the Requests sequence\n");
+for(i=0;i<n;i++)
+scanf("%d",&RQ[i]);
+printf("Enter initial head position\n");
+scanf("%d",&initial);
+for(i=0;i<n;i++)
+{
+TotalHeadMoment=TotalHeadMoment+abs(RQ[i]-initial);
+initial=RQ[i];
+}
+printf("Total head moment is %d",TotalHeadMoment);
+return 0;
+}
+```
+# OUTPUT
 
-1. Start the program.
-  
-2. Get the number of pages and their sequence from the user
+![image](https://github.com/Harsayazheni/OS-EX.11-IMPLEMENTATION-OF-DISK-SCHEDULING-ALGORITHMS/assets/118708467/4df94791-3635-4479-bfb3-7be2f941e8b1)
 
-3. Get the number of available page frames from the user.
+# RESULT
 
-4. In FIFO, on the basics of first in first out, replace the pages respectively, then find number of page faults occurred.
+Thus the implementation of the program for first come first serve disc scheduling has been successfully executed.
 
-5. Compare all frames with incoming page-
+# AIM
 
-6. If the incoming page is already available in page frame, set the match flag to indicate ‘no need of page replacement’.
-
-7. If the incoming page is not available in all frames, then remove the page which is loaded into the memory long back and give space for new incoming page.
-
-8. Increment the ‘number of Page faults counter
-
-9. Print the number of page faults.
-
-10. Stop the program.
+To write a program for the shortest seek time first method of disc scheduling.
 
 # PROGRAM
 ```
 #include<stdio.h>
+#include<stdlib.h>
 int main()
 {
-int i,j,n,a[50],frame[10],no,k,avail,count=0;
-printf("\n ENTER THE NUMBER OF PAGES:\n");
+int RQ[100],i,n,TotalHeadMoment=0,initial,count=0;
+printf("Enter the number of Requests\n");
 scanf("%d",&n);
-printf("\n ENTER THE PAGE NUMBER :\n");
-for(i=1;i<=n;i++)
-scanf("%d",&a[i]);
-printf("\n ENTER THE NUMBER OF FRAMES :");
-scanf("%d",&no);
-for(i=0;i<no;i++)
-frame[i]= -1;
-j=0;
-printf("\tRef string\t Page Frames\n");
-for(i=1;i<=n;i++)
+printf("Enter the Requests sequence\n");
+for(i=0;i<n;i++)
+scanf("%d",&RQ[i]);
+printf("Enter initial head position\n");
+scanf("%d",&initial);
+while(count!=n)
 {
-printf("%d\t\t\t",a[i]);
-avail=0;
-for(k=0;k<no;k++)
-if(frame[k]==a[i])
-avail=1;
-if (avail==0)
+int min=1000,d,index;
+for(i=0;i<n;i++)
 {
-frame[j]=a[i];
-j=(j+1)%no;
+d=abs(RQ[i]-initial);
+if(min>d)
+{
+min=d;
+index=i;
+}
+}
+TotalHeadMoment=TotalHeadMoment+min;
+initial=RQ[index];
+RQ[index]=1000;
 count++;
-for(k=0;k<no;k++)
-printf("%d\t",frame[k]);
 }
-printf("\n");
-}
-printf("\nPage Fault Is %d",count);
+printf("Total head movement is %d",TotalHeadMoment);
 return 0;
 }
 ```
-
 # OUTPUT
 
-![image](https://github.com/Harsayazheni/OS-EX.9-IMPLEMENTATION-OF-PAGING---MEMORY-MANAGEMENT-/assets/118708467/30ed9b5b-e967-4b24-ad05-89337728d133)
+![image](https://github.com/Harsayazheni/OS-EX.11-IMPLEMENTATION-OF-DISK-SCHEDULING-ALGORITHMS/assets/118708467/c31ab87c-27fd-4405-8c6a-eb9931e6db62)
 
 # RESULT
 
-Thus the implementation of FIFO page replacement is successfully executed.# OS-EX.9-IMPLEMENTATION-OF-PAGING---MEMORY-MANAGEMENT-
+Thus the implementation of the program for shortest seek time first scheduling has been successfully executed.
+
+# AIM
+
+To write a program for the SCAN of disc scheduling.
+
+# PROGRAM
+```
+#include<stdio.h>
+#include<stdlib.h>
+int main()
+{
+int RQ[100],i,j,n,TotalHeadMoment=0,initial,size,move;
+printf("Enter the number of Requests\n");
+scanf("%d",&n);
+printf("Enter the Requests sequence\n");
+for(i=0;i<n;i++)
+scanf("%d",&RQ[i]);
+printf("Enter initial head position\n");
+scanf("%d",&initial);
+printf("Enter total disk size\n");
+scanf("%d",&size);
+printf("Enter the head movement direction for high 1 and for low 0\n");
+scanf("%d",&move);
+for(i=0;i<n;i++)
+{
+for(j=0;j<n-i-1;j++)
+{
+if(RQ[j]>RQ[j+1])
+{
+int temp;
+temp=RQ[j];
+RQ[j]=RQ[j+1];
+RQ[j+1]=temp;
+}
+}
+}
+int index;
+for(i=0;i<n;i++)
+{
+if(initial<RQ[i])
+{
+index=i;
+break;
+}
+}
+if(move==1)
+{
+for(i=index;i<n;i++)
+{
+TotalHeadMoment=TotalHeadMoment+abs(RQ[i]-initial);
+initial=RQ[i];
+}
+// last movement for max size
+TotalHeadMoment=TotalHeadMoment+abs(size-RQ[i-1]-1);
+initial = size-1;
+for(i=index-1;i>=0;i--)
+{
+TotalHeadMoment=TotalHeadMoment+abs(RQ[i]-initial);
+initial=RQ[i];
+}
+}
+else
+{
+for(i=index-1;i>=0;i--)
+{
+TotalHeadMoment=TotalHeadMoment+abs(RQ[i]-initial);
+initial=RQ[i];
+}
+TotalHeadMoment=TotalHeadMoment+abs(RQ[i+1]-0);
+initial =0;
+for(i=index;i<n;i++)
+{
+TotalHeadMoment=TotalHeadMoment+abs(RQ[i]-initial);
+initial=RQ[i];
+}
+}
+printf("Total head movement is %d",TotalHeadMoment);
+return 0;
+}
+```
+# OUTPUT
+
+![image](https://github.com/Harsayazheni/OS-EX.11-IMPLEMENTATION-OF-DISK-SCHEDULING-ALGORITHMS/assets/118708467/2cbb3b8a-5908-487c-b3d1-5ee61f653f07)
+
+
+# RESULT
+
+Thus the implementation of the program for SCAN disc scheduling has been successfully executed.
+
+# AIM
+
+To write a program for the LOOK of disc scheduling.
+
+# PROGRAM
+```
+#include<stdio.h>
+#include<stdlib.h>
+int main()
+{
+int RQ[100],i,j,n,TotalHeadMoment=0,initial,size,move;
+printf("Enter the number of Requests\n");
+scanf("%d",&n);
+printf("Enter the Requests sequence\n");
+for(i=0;i<n;i++)
+scanf("%d",&RQ[i]);
+printf("Enter initial head position\n");
+scanf("%d",&initial);
+printf("Enter total disk size\n");
+scanf("%d",&size);
+printf("Enter the head movement direction for high 1 and for low 0\n");
+scanf("%d",&move);
+for(i=0;i<n;i++)
+{
+for(j=0;j<n-i-1;j++)
+{
+if(RQ[j]>RQ[j+1])
+{
+int temp;
+temp=RQ[j];
+RQ[j]=RQ[j+1];
+RQ[j+1]=temp;
+}
+}
+}
+int index;
+for(i=0;i<n;i++)
+{
+if(initial<RQ[i])
+{
+index=i;
+break;
+}
+}
+if(move==1)
+{
+for(i=index;i<n;i++)
+{
+TotalHeadMoment=TotalHeadMoment+abs(RQ[i]-initial);
+initial=RQ[i];
+}
+for(i=index-1;i>=0;i--)
+{
+TotalHeadMoment=TotalHeadMoment+abs(RQ[i]-initial);
+initial=RQ[i];
+}
+}
+else
+{
+for(i=index-1;i>=0;i--)
+{
+TotalHeadMoment=TotalHeadMoment+abs(RQ[i]-initial);
+initial=RQ[i];
+}
+for(i=index;i<n;i++)
+{
+TotalHeadMoment=TotalHeadMoment+abs(RQ[i]-initial);
+initial=RQ[i];
+}
+}
+printf("Total head movement is %d",TotalHeadMoment);
+return 0;
+}
+```
+# OUTPUT
+
+![image](https://github.com/Harsayazheni/OS-EX.11-IMPLEMENTATION-OF-DISK-SCHEDULING-ALGORITHMS/assets/118708467/70fe725d-12da-4b1f-8357-4121ad664d46)
+
+# RESULT
+
+Thus the implementation of the program for LOOK disc scheduling has been successfully executed.
